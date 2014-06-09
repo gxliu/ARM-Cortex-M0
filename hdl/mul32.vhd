@@ -17,8 +17,7 @@ architecture Behavioral of mul32 is
   end component badd32;
   signal zer : std_logic_vector(31 downto 0) := x"00000000";     -- zeros
   signal mul0: std_logic_vector(2 downto 0);
-  subtype word is std_logic_vector(31 downto 0);
-  type ary is array(0 to 15) of word;
+  type ary is array(0 to 15) of std_logic_vector(31 downto 0);
   signal s : ary;                       -- temp sums
 begin
   mul0 <= a(1 downto 0) & '0';

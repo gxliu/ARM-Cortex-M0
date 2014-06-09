@@ -1,11 +1,13 @@
 library ieee;
   use ieee.std_logic_1164.all;
+  use ieee.std_logic_unsigned.all;
   use ieee.numeric_std.all;
 
 entity shift is
   port ( mode   : in  std_logic_vector (1 downto 0);--0:LSLS 1:LSRS 2:ASRS 3:RORS
          shift  : in  std_logic_vector (4 downto 0);
          input  : in  std_logic_vector (31 downto 0);
+         carry  : out std_logic;
          output : out std_logic_vector (31 downto 0));
 end shift;
 
@@ -25,15 +27,11 @@ architecture Behavioral of shift is
   signal input4s  : std_logic_vector(3 downto 0);
   signal input8s  : std_logic_vector(7 downto 0);
   signal input16s : std_logic_vector(15 downto 0);
-
-  component mux32
-    port ( in0    : in  std_logic_vector (31 downto 0);
-           in1    : in  std_logic_vector (31 downto 0);
-           ctl    : in  std_logic;
-           result : out std_logic_vector (31 downto 0));
-  end component mux_32;
   
 begin
+  carry <= '0' when shift = "0000" else
+           input(32 - conv_integer(shift)) when mode = "00" else
+           input(conv_integer(shift) - 1);
 
   input1s <= input(31) when mode = "10" else
              input(0) when mode = "11" else
@@ -57,11 +55,11 @@ begin
   R16s <= R8(15 downto 0) & input16s when mode = "00" else 
           input16s & R8(31 downto 16);
   
-  R1m:  mux32 port map (in0=>input, in1=>R1s,  ctl=>shift(0), result=>R1);
-  R2m:  mux32 port map (in0=>R1,    in1=>R2s,  ctl=>shift(1), result=>R2);  
-  R4m:  mux32 port map (in0=>R2,    in1=>R4s,  ctl=>shift(2), result=>R4);
-  R8m:  mux32 port map (in0=>R4,    in1=>R8s,  ctl=>shift(3), result=>R8);
-  R16m: mux32 port map (in0=>R8,    in1=>R16s, ctl=>shift(4), result=>output);
+  R1 <= input when shift(0) = '0' else R1s;
+  R2 <= R1 when shift(1) = '0' else R2s;
+  R4 <= R2 when shift(2) = '0' else R4s;
+  R8 <= R4 when shift(3) = '0' else R8s;
+  output <= R8 when shift(4) = '0' else R16s;
 
 end Behavioral;
 
