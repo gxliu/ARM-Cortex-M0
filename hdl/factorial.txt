@@ -1,0 +1,10 @@
+nop
+LDR R0, R0, 36
+MOV R1, R0
+SUB R1, R1, 1
+BEQ +12
+MUL R1, R1, R0
+B -12
+STR R1, R0, 36
+B 0
+data_signed: 10

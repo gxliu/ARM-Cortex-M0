@@ -29,9 +29,9 @@ architecture Behavioral of shift is
   signal input16s : std_logic_vector(15 downto 0);
   
 begin
-  carry <= '0' when shift = "0000" else
-           input(32 - conv_integer(shift)) when mode = "00" else
-           input(conv_integer(shift) - 1);
+  carry <= '0' when shift = "0000" else '1';
+           --input(32 - conv_integer(shift)) when mode = "00" else
+           --input(conv_integer(shift) - 1);
 
   input1s <= input(31) when mode = "10" else
              input(0) when mode = "11" else
