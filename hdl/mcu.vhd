@@ -322,7 +322,7 @@ begin
   instr_11 <= '1' when instr_ok = '1' and instruction_fetched(15 downto 12) = "1001" else '0';
   instr_12 <= '1' when instr_ok = '1' and instruction_fetched(15 downto 12) = "1010" else '0'; 
   instr_13 <= '1' when instr_ok = '1' and instruction_fetched(15 downto 8 ) = "10110000" else '0'; --only implemented +offset, ignoring sign
-  instr_14 <= '1' when instr_ok = '1' and instruction_fetched(15 downto 12) = "1011" and instruction_fetched(10 downto 9) = "10"  else '0'; --TODO
+  instr_14 <= '1' when instr_ok = '1' and instruction_fetched(15 downto 12) = "1011" and instruction_fetched(10 downto 9) = "10"  else '0'; --multiple push implemented, multiple pop not
   instr_15 <= '1' when instr_ok = '1' and instruction_fetched(15 downto 12) = "1100" else '0';   --TODO
   instr_16 <= '1' when instr_ok = '1' and instruction_fetched(15 downto 12) = "1101" and instruction_fetched(11 downto 8) /= "1111" else '0';
   instr_17 <= '1' when instr_ok = '1' and instruction_fetched(15 downto 8 ) = "11011111" else '0';   --CPSR->SPSR not implemented, only thumb mode enable
