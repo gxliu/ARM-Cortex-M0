@@ -6,7 +6,6 @@ library std;
   use std.textio.all;
 
 entity memory_no_clk is
-  generic ( N : integer := 1);
   port ( clk     : in  std_logic;
          write_en: in  std_logic;
          addr_1  : in  std_logic_vector (31 downto 0);
@@ -17,7 +16,7 @@ entity memory_no_clk is
 end memory_no_clk;
 
 architecture Behavioral of memory_no_clk is
-   
+  signal N : integer := 29;
   type type_mem_file is array(0 to N) of bit_vector(31 downto 0);
   
   impure function load_from_mem (ram_file_name : in string) return type_mem_file is                                                   

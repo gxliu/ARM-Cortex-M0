@@ -14,17 +14,20 @@ entity alu is
 end alu;
 
 architecture Behavioral of alu is
-  component mul32 is
-    port ( a : in  std_logic_vector (31 downto 0);
-           b : in  std_logic_vector (31 downto 0);
-           p : out std_logic_vector (31 downto 0));
-  end component mul32;
+
+  function or_std_logic_vector (vector : in std_logic_vector) return std_logic is  
+    variable result : std_logic := '0' ;
+  begin                                                        
+    for I in vector'range loop                                  
+      result := result or vector(I);                                
+    end loop;                                                    
+    return result;                                                  
+  end function;
   
   component shift is
     port ( mode   : in  std_logic_vector (1 downto 0);--0:LSLS 1:LSRS 2:ASRS 3:RORS
            shift  : in  std_logic_vector (4 downto 0);
            input  : in  std_logic_vector (31 downto 0);
-           carry  : out std_logic;
            output : out std_logic_vector (31 downto 0));
   end component shift;
   
@@ -64,12 +67,7 @@ begin
 --10010 SUB ok, V not implemented
 
   
-  mul_block : mul32 port map (
-    a => input_1 ,
-    b => input_2 ,
-    p => output_mul
-  );
-  
+
   shift_mode <= "00" when funct = "00010" else
                 "01" when funct = "00011" else
                 "10" when funct = "00100" else
@@ -79,11 +77,9 @@ begin
     mode   => shift_mode ,
     shift  => input_2( 4 downto 0) ,
     input  => input_1 ,
-    carry  => carry_shift ,
     output => output_shift
   );
-  
-  
+
   input_add_2 <= input_2 when funct = "00101" or funct = "10001" or funct = "01011" else
                  std_logic_vector(unsigned(not(input_2)) + 1);
                  
@@ -105,7 +101,7 @@ begin
                 input_1 xor input_2 when funct = "00001" else
                 input_1 or input_2 when funct = "01100" else
                 input_1 and not(input_2) when funct = "01110" else
-                output_mul when funct = "01101" else
+                std_logic_vector(signed(input_1) * signed(input_2)) when funct = "01101" else
                 output_shift when funct = "00010" or funct = "00011" or funct = "00100" or funct = "00111" else
                 output_add when funct = "00101" or funct = "10001" or funct = "00110" or funct = "10010" or funct = "01011" or funct = "01010" else -- wrong "01011" , wrong "01010"
                 output_mvn when funct = "01111" else
@@ -114,10 +110,7 @@ begin
   output <= output_mux;   
 
   
-  zero <= not ( output_mux(31) or output_mux(30) or output_mux(29) or output_mux(28) or output_mux(27) or output_mux(26) or output_mux(25) or output_mux(24) or 
-                output_mux(23) or output_mux(22) or output_mux(21) or output_mux(20) or output_mux(19) or output_mux(18) or output_mux(17) or output_mux(16) or 
-                output_mux(15) or output_mux(14) or output_mux(13) or output_mux(12) or output_mux(11) or output_mux(10) or output_mux( 9) or output_mux( 8) or 
-                output_mux( 7) or output_mux( 6) or output_mux( 5) or output_mux( 4) or output_mux( 3) or output_mux( 2) or output_mux( 1) or output_mux( 0) );
+  zero <= not ( or_std_logic_vector(output_mux) );
 
 
   carry_mux <= carry_shift when funct = "00010" or funct = "00011" or funct = "00100" or funct = "00111" else
@@ -131,8 +124,7 @@ begin
   
   
   flags_next <= output_mux(31) & zero & carry_mux & overflow;
-  flags_update <= "01" when funct = "01101" or funct = "00000" or funct = "00001" or funct = "01100" or funct = "01110" or funct = "01000" or funct = "01111" or funct = "10000" else
-                  "10" when funct = "00010" or funct = "00011" or funct = "00100" or funct = "00111" else
+  flags_update <= "01" when funct = "01101" or funct = "00000" or funct = "00001" or funct = "01100" or funct = "01110" or funct = "01000" or funct = "01111" or funct = "10000" or funct = "00010" or funct = "00011" or funct = "00100" or funct = "00111"else
                   "11" when funct = "00101" or funct = "00110" or funct = "01001" or funct = "01010" or funct = "01011" or funct = "10001" or funct = "10010" else
                   "00";
                   

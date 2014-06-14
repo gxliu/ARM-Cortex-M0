@@ -7,7 +7,6 @@ entity shift is
   port ( mode   : in  std_logic_vector (1 downto 0);--0:LSLS 1:LSRS 2:ASRS 3:RORS
          shift  : in  std_logic_vector (4 downto 0);
          input  : in  std_logic_vector (31 downto 0);
-         carry  : out std_logic;
          output : out std_logic_vector (31 downto 0));
 end shift;
 
@@ -29,10 +28,6 @@ architecture Behavioral of shift is
   signal input16s : std_logic_vector(15 downto 0);
   
 begin
-  carry <= '0' when shift = "0000" else '1';
-           --input(32 - conv_integer(shift)) when mode = "00" else
-           --input(conv_integer(shift) - 1);
-
   input1s <= input(31) when mode = "10" else
              input(0) when mode = "11" else
              '0';
